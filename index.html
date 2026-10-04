@@ -71,7 +71,8 @@
           <div class="calendar-nav"><button id="today-button">Today</button><button id="previous-month" class="icon-button" aria-label="Previous month">‹</button><button id="next-month" class="icon-button" aria-label="Next month">›</button></div>
         </div>
         <div class="calendar-filters" aria-label="Filter calendar events"><button class="filter active" data-filter="all" aria-pressed="true">All events</button><button class="filter" data-filter="launch" aria-pressed="false"><i class="legend-dot launch"></i>Launches</button><button class="filter" data-filter="event" aria-pressed="false"><i class="legend-dot event"></i>Events & deadlines</button><span class="calendar-hint">Click an event for the details <span aria-hidden="true">↙</span></span></div>
-        <div class="calendar-scroll"><div class="weekday-row" aria-hidden="true"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div><div id="calendar-grid" class="calendar-grid" aria-label="Monthly event calendar"></div></div>
+        <p class="calendar-mobile-hint">Swipe the calendar sideways to see the full week.</p>
+        <div class="calendar-scroll" tabindex="0" role="region" aria-label="Monthly calendar; scroll horizontally on small screens"><div class="weekday-row" aria-hidden="true"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div><div id="calendar-grid" class="calendar-grid" aria-label="Monthly event calendar"></div></div>
         <div class="calendar-footer"><span><span class="today-key"></span> Today</span><span>Times shown in <strong id="calendar-zone"></strong></span></div>
         <p id="empty-month" class="empty-month" hidden>No announced events this month. More adventures are on the horizon.</p>
       </section>
