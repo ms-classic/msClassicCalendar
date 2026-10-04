@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f3">
+  <meta name="description" content="Your timezone-aware calendar for MapleStory Classic World launches and event deadlines.">
+  <title>Maple Calendar · Classic World</title>
+  <link rel="icon" href="assets\maple.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="calendar-core.js" defer></script>
+  <script src="events.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Maple Calendar home">
+      <span class="brand-icon"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#maple-leaf"></use></svg></span>
+      <span>maple<span class="brand-light">calendar</span><small>CLASSIC WORLD</small></span>
+    </a>
+    <div class="header-right"><span class="community-tag">A little planning. A lot of adventure.</span><a class="official-link" href="https://www.nexon.com/maplestory/news" target="_blank" rel="noopener noreferrer">Official news <span aria-hidden="true">↗</span></a></div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> YOUR NEXT ADVENTURE, ON THE CALENDAR</div>
+        <h1>Good times.<br><span>Great Maple memories.</span></h1>
+        <p>Launch days, events, and moments you don’t want to miss.<br class="desktop-break"> All in your time. All in one place.</p>
+        <div class="hero-caption"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#maple-leaf"></use></svg> A fresh start in a familiar world.</div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 460 270" role="presentation">
+          <defs><linearGradient id="cap" x2="0" y2="1"><stop stop-color="#ed9b5e"/><stop offset="1" stop-color="#da704a"/></linearGradient></defs>
+          <circle cx="268" cy="118" r="99" fill="#eee9d9"/>
+          <path d="M58 217Q153 164 245 196T437 209V263H58Z" fill="#cdd7b7"/>
+          <path d="M26 240Q124 207 220 231T461 222V270H26Z" fill="#a8bd99"/>
+          <path d="M364 65V222" stroke="#9ba87e" stroke-width="8" stroke-linecap="round"/>
+          <path d="M364 115L337 94M365 151L394 128" stroke="#9ba87e" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="356" cy="74" r="33" fill="#c5ce9b"/><circle cx="380" cy="87" r="29" fill="#b4c18e"/><circle cx="337" cy="98" r="26" fill="#c5ce9b"/>
+          <path d="M192 154Q183 188 187 225Q224 243 260 224Q263 182 251 153Z" fill="#fff3d6"/>
+          <path d="M135 152Q142 62 224 60Q305 61 313 152Q296 179 224 179Q150 179 135 152Z" fill="url(#cap)"/>
+          <ellipse cx="179" cy="122" rx="18" ry="14" transform="rotate(-25 179 122)" fill="#ffe3b1"/>
+          <ellipse cx="235" cy="87" rx="23" ry="15" transform="rotate(12 235 87)" fill="#ffe3b1"/>
+          <ellipse cx="280" cy="133" rx="14" ry="12" fill="#ffe3b1"/>
+          <ellipse cx="209" cy="202" rx="3.5" ry="5" fill="#654f3f"/><ellipse cx="239" cy="202" rx="3.5" ry="5" fill="#654f3f"/>
+          <path d="M219 212Q224 217 230 211" fill="none" stroke="#654f3f" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="199" cy="211" rx="7" ry="3" fill="#efbb99"/><ellipse cx="248" cy="211" rx="7" ry="3" fill="#efbb99"/>
+          <path d="M96 212V242M90 220L96 227L103 216M317 224V248M310 231L317 237L324 226" fill="none" stroke="#6c956d" stroke-width="3" stroke-linecap="round"/>
+          <g fill="#d6a55a"><circle cx="77" cy="118" r="3"/><circle cx="311" cy="43" r="3"/><path d="M110 68V80M104 74H116M415 160V172M409 166H421" stroke="#d6a55a" stroke-width="2"/></g>
+          <g fill="#cb8252"><path d="M104 149L112 140L119 152L112 161Z"/><path d="M400 46L407 37L412 47L406 54Z"/></g>
+        </svg>
+        <span class="art-note">Adventure is just around the corner.</span>
+      </div>
+    </section>
+
+    <section class="time-bar" aria-label="Current time and timezone">
+      <div class="clock-block"><span class="live-dot"></span><div><span class="label">RIGHT NOW</span><time id="live-clock">--:--:--</time><span id="live-date" class="clock-date"></span></div></div>
+      <div class="timezone-block">
+        <label for="timezone">YOUR TIMEZONE <span id="timezone-status">Auto-detected</span></label>
+        <div class="timezone-controls"><select id="timezone" aria-describedby="timezone-help"></select><button id="detect-timezone" class="icon-button" title="Use your device timezone" aria-label="Use your device timezone">◎</button></div>
+      </div>
+      <p id="timezone-help">Different timezone?<br>Same adventure. We’ll handle the math.</p>
+    </section>
+    <p id="storage-notice" class="notice" role="status" hidden></p>
+
+    <div class="content-layout">
+      <section class="calendar-panel" aria-labelledby="month-title">
+        <div class="calendar-toolbar">
+          <div class="month-heading"><h2 id="month-title">October 2026</h2><span id="month-count"></span></div>
+          <div class="calendar-nav"><button id="today-button">Today</button><button id="previous-month" class="icon-button" aria-label="Previous month">‹</button><button id="next-month" class="icon-button" aria-label="Next month">›</button></div>
+        </div>
+        <div class="calendar-filters" aria-label="Filter calendar events"><button class="filter active" data-filter="all" aria-pressed="true">All events</button><button class="filter" data-filter="launch" aria-pressed="false"><i class="legend-dot launch"></i>Launches</button><button class="filter" data-filter="event" aria-pressed="false"><i class="legend-dot event"></i>Events & deadlines</button><span class="calendar-hint">Click an event for the details <span aria-hidden="true">↙</span></span></div>
+        <div class="calendar-scroll"><div class="weekday-row" aria-hidden="true"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div><div id="calendar-grid" class="calendar-grid" aria-label="Monthly event calendar"></div></div>
+        <div class="calendar-footer"><span><span class="today-key"></span> Today</span><span>Times shown in <strong id="calendar-zone"></strong></span></div>
+        <p id="empty-month" class="empty-month" hidden>No announced events this month. More adventures are on the horizon.</p>
+      </section>
+
+      <aside class="sidebar" aria-label="Upcoming events">
+        <section class="next-event-card"><div class="eyebrow">NEXT UP <span aria-hidden="true">↗</span></div><h2 id="next-event-title">Loading next adventure</h2><p id="next-event-date"></p><div id="countdown" class="countdown"></div><button id="next-event-details">See the details <span aria-hidden="true">→</span></button></section>
+        <section class="upcoming-section"><div class="section-title"><h2>On the horizon</h2><span id="upcoming-count"></span></div><div id="upcoming-list" role="region" aria-label="All current and upcoming events; scroll for more" tabindex="0"></div></section>
+        <div class="note-card"><span class="note-icon" aria-hidden="true">✧</span><div><h3>A friendly heads-up</h3><p>Schedules can change. Always check the official announcement before making plans.</p><a href="https://www.nexon.com/maplestory/news/general/45621/founder-s-access-release-notes" target="_blank" rel="noopener noreferrer">Founder’s Access release notes ↗</a></div></div>
+      </aside>
+    </div>
+    <section class="source-note"><span aria-hidden="true">ⓘ</span><p>Launch times from the <a href="https://www.nexon.com/maplestory/news/general/45385/maple-story-classic-world-faq" target="_blank" rel="noopener noreferrer">Classic World FAQ</a>. Events from the <a href="https://www.nexon.com/maplestory/news/general/45621/founder-s-access-release-notes" target="_blank" rel="noopener noreferrer">release notes</a>; sales and pickup details from the <a href="https://www.nexon.com/maplestory/news/sale/44134/classic-world-founder-s-packages-now-on-sale" target="_blank" rel="noopener noreferrer">Founder’s Package sale announcement</a> and public Classic World shop data. Times are converted to your timezone. This is a curated calendar, not a live news feed.</p></section>
+  </main>
+  <footer class="site-footer"><span class="footer-brand">maplecalendar <span>·</span> Made for the adventure.</span><span>Unofficial fan calendar. Not affiliated with Nexon.</span></footer>
+  <dialog id="event-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-heading"><span id="dialog-category" class="event-category"></span><button id="close-dialog" class="icon-button" aria-label="Close event details">×</button></div>
+    <h2 id="dialog-title"></h2><p id="dialog-description"></p>
+    <dl class="event-facts"><div><dt id="dialog-time-label">Starts</dt><dd id="dialog-start"></dd></div><div id="dialog-end-row" hidden><dt>Ends</dt><dd id="dialog-end"></dd></div><div><dt>Timezone</dt><dd id="dialog-zone"></dd></div><div><dt>Original announcement</dt><dd id="dialog-original"></dd></div></dl>
+    <p id="dialog-note" class="dialog-note"></p>
+    <a id="dialog-source" class="source-button" target="_blank" rel="noopener noreferrer">Read the official announcement ↗</a>
+    <a id="dialog-timing-source" class="timing-link" target="_blank" rel="noopener noreferrer" hidden>Exact sale timing (official shop data) ↗</a>
+    <a id="dialog-details-source" class="timing-link" target="_blank" rel="noopener noreferrer" hidden>Outfits and collection details ↗</a>
+  </dialog>
+  <noscript><div class="noscript-notice">Enable JavaScript to view the calendar and convert event times. Founder’s Access: October 6, 2026 at 11 AM PDT. Grand Launch: October 21, 2026 at 11 AM PDT.</div></noscript>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><symbol id="maple-leaf" viewBox="0 0 48 48"><path d="M24 3L29 14L36 10L34 22L44 20L40 30L44 33L27 37L26 45H22L23 37L5 33L9 29L4 20L15 22L12 10L20 14Z" fill="currentColor"/></symbol></defs></svg>
+</body>
+</html>
