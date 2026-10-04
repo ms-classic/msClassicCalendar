@@ -11,6 +11,32 @@
     }
   }
 
+  const timezoneFormatters = new Map();
+
+  function timezoneDetails(zone, date = new Date()) {
+    if (!timezoneFormatters.has(zone)) {
+      timezoneFormatters.set(zone, {
+        name: new Intl.DateTimeFormat("en-US", { timeZone: zone, timeZoneName: "long" }),
+        offset: new Intl.DateTimeFormat("en-US", { timeZone: zone, timeZoneName: "shortOffset" }),
+      });
+    }
+    const formatters = timezoneFormatters.get(zone);
+    const name = formatters.name.formatToParts(date).find((part) => part.type === "timeZoneName").value;
+    const offset = formatters.offset.formatToParts(date).find((part) => part.type === "timeZoneName").value;
+    const match = /^GMT(?:([+-])(\d{1,2})(?::(\d{2}))?)?$/.exec(offset);
+    if (!match) throw new Error(`Unrecognized timezone offset for ${zone}: ${offset}`);
+    const offsetMinutes = (Number(match[2] || 0) * 60 + Number(match[3] || 0)) * (match[1] === "-" ? -1 : 1);
+    const magnitude = Math.abs(offsetMinutes);
+    const offsetLabel = `UTC${offsetMinutes < 0 ? "-" : "+"}${String(Math.floor(magnitude / 60)).padStart(2, "0")}:${String(magnitude % 60).padStart(2, "0")}`;
+    const location = zone.replaceAll("_", " ").replaceAll("/", " / ");
+    return { zone, name, offsetMinutes, offsetLabel, label: `${name} (${offsetLabel}) — ${location}` };
+  }
+
+  function timezoneOptions(zones, date = new Date()) {
+    return [...new Set(zones)].map((zone) => timezoneDetails(zone, date))
+      .sort((a, b) => a.offsetMinutes - b.offsetMinutes || a.name.localeCompare(b.name, "en") || a.zone.localeCompare(b.zone, "en"));
+  }
+
   function zonedParts(date, timeZone) {
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone, year: "numeric", month: "2-digit", day: "2-digit",
@@ -133,7 +159,7 @@
     return events;
   }
 
-  const api = { isValidTimezone, zonedParts, dateKey, monthCells, eventDateRange, eventsOnDay, weekSegments, hasReachedStart, upcomingEvents, countdown, validateEvents };
+  const api = { isValidTimezone, timezoneDetails, timezoneOptions, zonedParts, dateKey, monthCells, eventDateRange, eventsOnDay, weekSegments, hasReachedStart, upcomingEvents, countdown, validateEvents };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.MapleCalendar = api;
 })(globalThis);

@@ -11,6 +11,8 @@ let activeEvent = null;
 let nextEvent = null;
 let previousDayKey = "";
 let previousUpcomingKey = "";
+let previousTimezoneMinute = -1;
+let previousTimezoneOptionsKey = "";
 let year;
 let month;
 
@@ -67,26 +69,38 @@ function fullDate(value) {
   return formatDate(value, { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
 }
 
-function timezoneLabel(zone) {
-  return zone.replaceAll("_", " ").replaceAll("/", " / ");
+function timezoneLabel(zone, date = new Date()) {
+  const { name, offsetLabel } = core.timezoneDetails(zone, date);
+  return `${name} (${offsetLabel})`;
 }
 
-function buildTimezoneOptions() {
+function buildTimezoneOptions(now = new Date()) {
   const common = ["UTC", "America/Los_Angeles", "America/Denver", "America/Chicago", "America/New_York", "America/Sao_Paulo", "Europe/London", "Europe/Paris", "Asia/Kolkata", "Asia/Singapore", "Asia/Seoul", "Asia/Tokyo", "Australia/Sydney", "Pacific/Auckland"];
   const supported = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : common;
-  const zones = [...new Set([detectedTimezone, timezone, ...common, ...supported])].filter(core.isValidTimezone).sort();
-  for (const zone of zones) {
-    const option = document.createElement("option");
-    option.value = zone;
-    option.textContent = timezoneLabel(zone);
-    $("timezone").append(option);
+  const zones = [...new Set([detectedTimezone, timezone, ...common, ...supported])].filter(core.isValidTimezone);
+  const options = core.timezoneOptions(zones, now);
+  const key = options.map((entry) => entry.label).join("\n");
+  if (key !== previousTimezoneOptionsKey) {
+    const fragment = document.createDocumentFragment();
+    for (const entry of options) {
+      const option = document.createElement("option");
+      option.value = entry.zone;
+      option.textContent = entry.label;
+      fragment.append(option);
+    }
+    $("timezone").replaceChildren(fragment);
+    previousTimezoneOptionsKey = key;
   }
   $("timezone").value = timezone;
+  previousTimezoneMinute = Math.floor(now.getTime() / 60000);
 }
 
-function refreshTimezoneLabel() {
-  $("timezone-status").textContent = timezone === detectedTimezone ? "Auto-detected" : "Custom";
-  $("calendar-zone").textContent = timezoneLabel(timezone);
+function refreshTimezoneLabel(now = new Date()) {
+  const details = core.timezoneDetails(timezone, now);
+  $("timezone-status").textContent = timezone === Intl.DateTimeFormat().resolvedOptions().timeZone ? "Auto-detected" : "Custom";
+  $("timezone-offset").textContent = details.offsetLabel;
+  $("timezone").title = details.label;
+  $("calendar-zone").textContent = timezoneLabel(timezone, now);
 }
 
 function eventButton(event, className) {
@@ -268,7 +282,8 @@ function showEvent(event) {
   $("dialog-start").textContent = startDescription(event);
   $("dialog-end-row").hidden = !event.end;
   $("dialog-end").textContent = event.end ? fullDate(event.end) : "";
-  $("dialog-zone").textContent = `${timezoneLabel(timezone)}${event.startDate ? " (cutoff time; opening date is shown as announced)" : ""}`;
+  const zoneDate = event.start || event.end;
+  $("dialog-zone").textContent = `${timezoneLabel(timezone, zoneDate ? new Date(zoneDate) : new Date())}${event.startDate && event.end ? " (cutoff time; opening date is shown as announced)" : ""}`;
   $("dialog-original").textContent = event.originalTime || "See official announcement.";
   $("dialog-note").textContent = event.note || "Schedules may change. Please check the official source.";
   $("dialog-source").href = event.source;
@@ -283,6 +298,11 @@ function showEvent(event) {
 
 function tick() {
   const now = new Date();
+  if (Math.floor(now.getTime() / 60000) !== previousTimezoneMinute) {
+    buildTimezoneOptions(now);
+    refreshTimezoneLabel(now);
+    if (activeEvent && $("event-dialog").open) showEvent(activeEvent);
+  }
   const dayKey = core.dateKey(core.zonedParts(now, timezone));
   $("live-clock").textContent = formatDate(now, { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
   $("live-clock").dateTime = now.toISOString();
@@ -299,7 +319,7 @@ function tick() {
 function setTimezone(zone) {
   if (!core.isValidTimezone(zone)) throw new Error(`Unsupported timezone: ${zone}`);
   timezone = zone;
-  $("timezone").value = zone;
+  buildTimezoneOptions();
   try {
     localStorage.setItem(storageKey, zone);
   } catch (error) {
